@@ -10,6 +10,7 @@ Gunter Wiedemann
 #include <HallSensor.h>    //needs to be inserted, otherwise .h is not found
 #include <Arduino.h>
 #include <constants.h>
+#include <math.h>
 
 
 /*+*******************************************************************************/
@@ -75,37 +76,23 @@ void HallSensor::ReadRawValue() {
 
 // calculates the distance between hall sensor and ball with exponentiell approximation
 int HallSensor::CalcDistanceSensorVsBallExact() {
-    return -1;
+    double uSens = Volt2Digit * rawValue;
+    double x = 1 / K4MAGCOEFF2 * log(KSENSEU2B / K4MAGCOEFF1 * (USENSE0 - uSens));
+    return (int(x * 100));
 };
 
 // calculates the distance between hall sensor and ball with polynomial approximation
 int HallSensor::CalcDistanceSensorVsBallPoly() {
     int branch0 = A0HAT;
-    Serial.println();
-    Serial.print("brnach0 = ");
-    Serial.println(branch0);
-
     int branch1 = (rawValue * A1HAT) >> RIGHTSHIFTA1HAT;
-    Serial.println();
-    Serial.print("brnach1 = ");
-    Serial.println(branch1);
-
     int branch2Temp = (rawValue * A2HAT) >> RIGHTSHIFTA21HAT;
-    Serial.println();
-    Serial.print("brnach2Temp = ");
-    Serial.println(branch2Temp);
-
     int branch2 = (branch2Temp * branch2Temp) >> RIGHTSHIFTA22HAT;
-    Serial.println();
-    Serial.print("brnach2 = ");
-    Serial.println(branch2);
-
     return (branch0 + branch1 + branch2);
 };
 
 // calculates the distance between hall sensor and magnet with exponentiell approximation
 int HallSensor::CalcDistanceMagnetVsBallExact() {
-    return -1;
+    return(distanceBetweenHallAndMagnet - CalcDistanceSensorVsBallExact() - ballDiameter);
 };
 
 // calculates the distance between hall sensor and magnet with polynomial approximation
@@ -130,5 +117,12 @@ void HallSensor::DispAllAtSerial() {
     Serial.print("Abstand Ball <-> Elektromagnet (Polynom) = ");
     Serial.print(CalcDistanceMagnetVsBallPoly());
     Serial.println(" 1/100 mm");
+    Serial.print("Abstand Ball <-> Hallsensor (Exakt) = ");
+    Serial.print(CalcDistanceSensorVsBallExact());
+    Serial.println(" 1/100 mm");
+    Serial.print("Abstand Ball <-> Elektromagnet (Exakt) = ");
+    Serial.print(CalcDistanceMagnetVsBallExact());
+    Serial.println(" 1/100 mm");
+
     
 };
