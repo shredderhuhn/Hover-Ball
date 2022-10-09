@@ -1,5 +1,5 @@
-#include "HBString.h"    //muss hier eingefügt werden, findet .h sonst nicht
-#include <arduino.h>
+#include <HBString.h>    //muss hier eingefügt werden, findet .h sonst nicht
+#include <Arduino.h>
 
 HBString::HBString(void)
 {

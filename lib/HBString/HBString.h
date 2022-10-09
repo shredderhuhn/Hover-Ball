@@ -11,7 +11,7 @@
 #ifndef HBSTRING_h
 #define HBSTRING_h
 
-#include <arduino.h>
+#include <Arduino.h>
 
 
 class HBString
