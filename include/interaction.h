@@ -6,9 +6,12 @@ Gunter Wiedemann
 
 #include <HallSensor.h>
 #include <constants.h>
+#include <HBString.h>
 
 #ifndef INTERACTION_H
 #define INTERACTION_H
+
+
 
 void serialinteraction(Status &status, HallSensor &hall);
 

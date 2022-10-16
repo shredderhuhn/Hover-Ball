@@ -14,6 +14,7 @@ Gunter Wiedemann
 //#include <Arduino.h>
 
 
+/// @brief contains all functions and variables to handle sensor data
 class HallSensor {
     private:
         int pinOfHallSensor;

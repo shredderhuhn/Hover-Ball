@@ -20,9 +20,9 @@ class HBString
 private:
 
   void ParseWholeString(void);
-  int nKeyWords = 12; //sizeof liefert Anzahl aller Zeichen (56 tbc)
-  String validKeyWord[13] = {"help","ver","state","next","prev","stop","ref",\
-                             "meas","offset","reset","failure","failure"};
+  int nKeyWords = 10; //sizeof liefert Anzahl aller Zeichen (56 tbc)
+  String validKeyWord[10] = {"help","ver","state","next","prev","ref",\
+                             "meas","offset","reset","failure"};
   String wholeString;
   bool InKeyWord(String);
 

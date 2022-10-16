@@ -2,6 +2,9 @@
 // Gunter Wiedemann
 // 08.10.2022
 
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
+
 /***************************************/
 /* Structures that aren't constants    */
 /***************************************/
@@ -22,10 +25,20 @@ struct Status
 /* Arduino Due Port Definition    */
 /**********************************/
 
-#ifndef CONSTANTS_H
-#define CONSTANTS_H
 
 #define HALLPIN                     A0
+#define LED1R                       2
+#define LED1G                       3
+#define LED1B                       4
+#define LED2R                       5
+#define LED2G                       6
+#define LED2B                       7
+#define LED3R                       8
+#define LED3G                       9
+#define LED3B                       10
+#define MOTOROFFSETPIN              DAC0
+#define MOTORCURRENTPIN             DAC1
+
 
 
 /**********************************/
