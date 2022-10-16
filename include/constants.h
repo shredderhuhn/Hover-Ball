@@ -2,6 +2,22 @@
 // Gunter Wiedemann
 // 08.10.2022
 
+/***************************************/
+/* Structures that aren't constants    */
+/***************************************/
+
+/// @brief contains all variables that can be changed by interaction
+/// @param state State of the state machine - int 0...10
+/// @param setpoint Setpoint of the control loop - int 1000 ... 2000 [1/100 mm]
+/// @param offset Current offset of the control output -  0 ... 4095 [digit]
+struct Status
+{
+    int state;
+    int setpoint;
+    int offset;
+};
+
+
 /**********************************/
 /* Arduino Due Port Definition    */
 /**********************************/
@@ -37,6 +53,21 @@
 #define K4MAGCOEFF2                 -0.1248
 #define KSENSEU2B                   320.0
 #define USENSE0                     2.5
-#define Volt2Digit                  4095.0/3.3
+#define VOLT2DIGIT                  4095.0/3.3
+
+// Sensor limits
+#define TOOMUCHVOLTAGE              2.7
+#define TOOCLOSETOSENSOR            1.0
+#define TOOCLOSETOOMAGNET           2.1
+
+/************************************/
+/* Parameter of the Control Loop    */
+/************************************/
+
+#define INITIALSETPOINT             1600        // [1/100 mm]
+/// @todo find out right INITIALCURRENTOFFSET for INITIALSETPOINT
+/// @todo find out whether it is better to work with Amps instead of digits
+#define INITIALCURRENTOFFSET        0           // [digit]
+#define SAMPLETIME                  1000        // [µs]      // 1kHz Takt für den Anfang       
 
 #endif
