@@ -76,7 +76,7 @@ void HallSensor::ReadRawValue() {
 
 // calculates the distance between hall sensor and ball with exponentiell approximation
 int HallSensor::CalcDistanceSensorVsBallExact() {
-    double uSens = Volt2Digit * rawValue;
+    double uSens = VOLT2DIGIT * rawValue;
     double x = 1 / K4MAGCOEFF2 * log(KSENSEU2B / K4MAGCOEFF1 * (USENSE0 - uSens));
     return (int(x * 100));
 };

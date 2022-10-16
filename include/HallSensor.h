@@ -48,6 +48,7 @@ class HallSensor {
         int GetBallDiameter(void);                  // [1/100mm]
         void SetRawValue(int);  // [digit] // just a debaug function
         int GetRawValue(void);  // [digit]
+        double GetVoltageValue(void); // 
 
 };
 
