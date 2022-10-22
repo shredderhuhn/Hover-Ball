@@ -8,10 +8,23 @@
 // Variables need to be global to get into setup and loop
 HallSensor hall(HALLPIN, DISTANCESENSORMAGNET, BALLDIAMETER);
 Status status;
+Ctrl ctrl;
+
 
 
 void controlHandler(void) {
-
+  hall.ReadRawValue();
+  ctrl.error = -(ctrl.setpoint - hall.CalcDistanceMagnetVsBallPoly());
+  ctrl.errorTildeK = K0Z * ctrl.error;
+  ctrl.u1K = (ctrl.errorTildeK * K3Z) >> 0;
+  ctrl.u2KM1 = ctrl.u2K;
+  ctrl.u2K = ((ctrl.errorTildeKM1 * K1Z) >> 10) + ((ctrl.u2KM1 * K2Z) >> 12);
+  ctrl.u = (ctrl.u1K + ctrl.u2K) >> 7;
+  ctrl.u = (ctrl.u1K + ctrl.u2K) >> 7;
+  ctrl.dac0 = UDAC0;
+  ctrl.dac1 = constrain(ctrl.u + ctrl.offset + UDAC0, 0, 4095);
+  analogWrite(DAC0,ctrl.dac0);
+  analogWrite(DAC1,ctrl.dac1);
 }
 
 void resetController(void) {

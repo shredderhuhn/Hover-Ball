@@ -22,6 +22,22 @@ struct Status
     int failure;
 };
 
+struct Ctrl
+{
+    int setpoint;
+    int offset;
+    int error;
+    int errorTildeK;
+    int errorTildeKM1;
+    int u1K;
+    int u2K;
+    int u2KM1;
+    int u;
+    int dac0;
+    int dac1;
+    //int controllerOut;
+};
+
 /***************************************/
 /* failure definition                  */
 /***************************************/
@@ -101,9 +117,15 @@ struct Status
 #define MAXSETPOINT                 2000        // [1/100 mm]
 /// @todo find out right INITIALCURRENTOFFSET for INITIALSETPOINT
 /// @todo find out whether it is better to work with Amps instead of digits
-#define INITIALCURRENTOFFSET        0           // [digit]
+#define INITIALCURRENTOFFSET        780         // [digit]
 #define MINCURRENTOFFSET            0           // [digit]
 #define MAXCURRENTOFFSET            4095        // [digit]
-#define SAMPLETIME                  1000        // [µs]      // 1kHz Takt für den Anfang       
+#define SAMPLETIME                  1000        // [µs]      // 1kHz Takt für den Anfang  
+#define K0Z                         2362      
+#define K1Z                         -3024
+#define K2Z                         2752
+#define K3Z                         10
+#define UDAC0                       844         // [digit] 844 entspricht 1V
+
 
 #endif
