@@ -17,14 +17,14 @@ Gunter Wiedemann
 /* Constructors                                                                  */
 /*+*******************************************************************************/
 
-// Constructor, defining the pin at Arduino Due with hallsensor and 12 bit resolution
+/// @brief Constructor, defining the pin at Arduino Due with hallsensor and 12 bit resolution
 HallSensor::HallSensor(int _pinOfHallSensor) {
     pinOfHallSensor = _pinOfHallSensor;
     analogReadResolution(12);
     pinMode(pinOfHallSensor, INPUT); //10 bit resolution is default
 }
 
-/// Constructor, defining hallsensor pin and distance between sensor and magnet
+/// @brief Constructor, defining hallsensor pin and distance between sensor and magnet
 HallSensor::HallSensor(int _pinOfHallSensor, int _distanceBetweenPinAndMagnet, int _ballDiameter) {
     pinOfHallSensor = _pinOfHallSensor;
     analogReadResolution(12);
@@ -54,7 +54,7 @@ int HallSensor::GetBallDiameter(void) {
     return ballDiameter;
 }
 
-// just for diagnosis
+/// @brief just for diagnosis
 void HallSensor::SetRawValue(int _rawValue) {
     rawValue = _rawValue;
 }
@@ -69,19 +69,19 @@ int HallSensor::GetRawValue(void) {
 /*+*******************************************************************************/
 
 
-/// reads the rawValue and stores it in the instance
+/// @brief reads the rawValue and stores it in the instance
 void HallSensor::ReadRawValue() {
     rawValue = analogRead(pinOfHallSensor);
 };
 
-// calculates the distance between hall sensor and ball with exponentiell approximation
+/// @brief calculates the distance between hall sensor and ball with exponentiell approximation
 int HallSensor::CalcDistanceSensorVsBallExact() {
     double uSens = VOLT2DIGIT * rawValue;
     double x = 1 / K4MAGCOEFF2 * log(KSENSEU2B / K4MAGCOEFF1 * (USENSE0 - uSens));
     return (int(x * 100));
 };
 
-// calculates the distance between hall sensor and ball with polynomial approximation
+/// @brief calculates the distance between hall sensor and ball with polynomial approximation
 int HallSensor::CalcDistanceSensorVsBallPoly() {
     int branch0 = A0HAT;
     int branch1 = (rawValue * A1HAT) >> RIGHTSHIFTA1HAT;
@@ -90,17 +90,17 @@ int HallSensor::CalcDistanceSensorVsBallPoly() {
     return (branch0 + branch1 + branch2);
 };
 
-// calculates the distance between hall sensor and magnet with exponentiell approximation
+/// @brief calculates the distance between hall sensor and magnet with exponentiell approximation
 int HallSensor::CalcDistanceMagnetVsBallExact() {
     return(distanceBetweenHallAndMagnet - CalcDistanceSensorVsBallExact() - ballDiameter);
 };
 
-// calculates the distance between hall sensor and magnet with polynomial approximation
+/// @brief calculates the distance between hall sensor and magnet with polynomial approximation
 int HallSensor::CalcDistanceMagnetVsBallPoly() {  
     return(distanceBetweenHallAndMagnet - CalcDistanceSensorVsBallPoly() - ballDiameter);
 };
 
-// display all values on serial monitor
+/// @brief display all values on serial monitor
 void HallSensor::DispAllAtSerial() {
     Serial.print("Abstand Elektromagnet <-> Hallsensor = ");
     Serial.print(distanceBetweenHallAndMagnet);

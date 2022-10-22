@@ -2,6 +2,14 @@
 #include <constants.h>
 #include <HallSensor.h>
 #include <HBString.h>
+#include <interaction.h>
+
+void initState(Status &status) {
+  status.offset = INITIALCURRENTOFFSET;
+  status.setpoint = INITIALSETPOINT;
+  status.state = 0;
+  status.failure = 0;
+}
 
 void printHelp() {
   Serial.println("Folgende Kommandos stehen zur Verfügung.");
@@ -35,19 +43,45 @@ void printHelp() {
   
 }
 
-/// @brief 
-/// @param status 
-/// @param hall 
-void serialinteraction(Status &status, HallSensor &hall){
-      if (Serial.available()){        // Daten liegen an
+void printStatus(Status &status, HallSensor &hall){
+    Serial.println("Werte des Statusregisters:");
+    Serial.print("state = ");
+    Serial.println(status.state);
+    Serial.print("setpoint = ");
+    Serial.println(status.setpoint);
+    Serial.print("offset = ");
+    Serial.println(status.offset);
+    Serial.println("Alle Sensorwerte:");
+    hall.DispAllAtSerial();
+    Serial.println();
+}
+
+void printFailure(Status &status){
+  Serial.print("Fehlerstatus = ");
+  Serial.println(status.failure);
+  if (status.failure && BALLUPSIDEDOWN) Serial.println("Kugel falsch herum eingesetzt. (Sensorspannung >2.7V)");
+  if (status.failure && BALLATMAGNET) Serial.println("Kugel klebt am Magneten. (Sensorspannung >2.3V)");
+  if (status.failure && BALLDOWN) Serial.println("Kugel abgefallen. (Sensorspannung <1.0V)");
+}
+
+
+void serialinteraction(Status &status, HallSensor &hall) {
+
+  static HBString zerlegterString;
+  static bool measFlag = 0;
+
+  if (measFlag) {
+    hall.ReadRawValue();
+    Serial.println(hall.GetRawValue());
+  }
+
+  delay(200);
+
+  if (Serial.available()){        // Daten liegen an
     
     String msg = Serial.readString(); // Nachricht lesen
     Serial.print("Empfangene Message: ");
     Serial.println(msg);
-    // parsen des Strings "msg" 
-    //es könnte zeitaufwendig sein, jedes Mal eine neue Klasse zu instanziieren
-    //daher machen wir die Klasse global (s. weiter oben)
-    //InputString zerlegterString; 
     zerlegterString.ClearString();
     zerlegterString.SetString(msg); 
     
@@ -56,116 +90,111 @@ void serialinteraction(Status &status, HallSensor &hall){
       printHelp();
       
     } else if (zerlegterString.cmd == "ver") {
-      SerialChn.print("Version: ");
-      SerialChn.println(__FILE__);
+      Serial.print("Version: ");
+      Serial.println(__FILE__);
       
     } else if (zerlegterString.cmd == "diag" && zerlegterString.get) {
-      SerialChn.print("Diagnosestatus: ");
-      if (diagnosis == ON) SerialChn.println("ON");
-      if (diagnosis == OFF) SerialChn.println("OFF");
+      printStatus(status, hall);
       
-    } else if (zerlegterString.cmd == "diag" && zerlegterString.set) {
-      if (zerlegterString.number[0] > 0) {
-        diagnosis = ON;
-        SerialChn.print("Diagnosestatus: ");
-        SerialChn.println("ON");
-      } else {
-        diagnosis = OFF;
-        SerialChn.print("Diagnosestatus: ");
-        SerialChn.println("OFF");
-      }
+    } else if (zerlegterString.cmd == "state" && zerlegterString.set) {
+      status.state = constrain(zerlegterString.number[0],MINSTATE, MAXSTATE);
+      Serial.print("neuer state = ");
+      Serial.println(status.state);
       
-    } else if ((zerlegterString.cmd == "time" || zerlegterString.cmd == "date") && zerlegterString.get) {
-      //gibt aktuelle Zeit und Zeitstatus und Datumsstatus aus
-      printTimeToSet(rtcDay, rtcMonth, rtcYear, rtcHour, rtcMinute, rtcSecond);
+    } else if (zerlegterString.cmd == "state" && zerlegterString.get) {
+      Serial.print("state = ");
+      Serial.println(status.state);
       
-    } else if ((zerlegterString.cmd == "time") && zerlegterString.set) {
-      if (zerlegterString.number[0] > -1 && zerlegterString.number[1] > -1) {
-        if (zerlegterString.number[2] == -1) zerlegterString.number[2] = 0;
-        rtcHour = zerlegterString.number[0];
-        rtcMinute = zerlegterString.number[1];
-        rtcSecond = zerlegterString.number[2];
-        printTimeToSet(rtcDay, rtcMonth, rtcYear, rtcHour, rtcMinute, rtcSecond);
-      } else {
-        SerialChn.println("falsche Zeitangabe.");
-      }
+    } else if ((zerlegterString.cmd == "next") && zerlegterString.set) {
+      Serial.print("alter state = ");
+      Serial.println(status.state);
+      int tempState = status.state++;
+      status.state = constrain(tempState,MINSTATE, MAXSTATE);
+      Serial.print("neuer state = ");
+      Serial.println(status.state);
       
-    } else if ((zerlegterString.cmd == "date") && zerlegterString.set) {
-      if (zerlegterString.number[0] > -1 && zerlegterString.number[1] > -1 && zerlegterString.number[2] > -1) {
-        rtcDay = zerlegterString.number[0];
-        rtcMonth = zerlegterString.number[1];
-        rtcYear = zerlegterString.number[2];
-        printTimeToSet(rtcDay, rtcMonth, rtcYear, rtcHour, rtcMinute, rtcSecond);
-      } else {
-        SerialChn.println("falsche Datumsangabe.");
-      }
+    } else if ((zerlegterString.cmd == "prev") && zerlegterString.set) {
+      Serial.print("alter state = ");
+      Serial.println(status.state);
+      int tempState = status.state--;
+      status.state = constrain(tempState, MINSTATE, MAXSTATE);
+      Serial.print("neuer state = ");
+      Serial.println(status.state);
       
-    } else if ((zerlegterString.cmd == "rtc") && zerlegterString.get) {
-      //gibt aktuelle RTC - Zeit und Status aus
-      printRTCTime(rtc.now());
-      SerialChn.print("Zeit gültig: ");
-      if (rtc.lostPower()) {
-        SerialChn.println("nein");
-        failure |= (uint8_t)1 << NOTIME;    //Fehlerbit ein
-      } else {
-        SerialChn.println("ja");   
-        failure &= ~(uint8_t)1 << NOTIME;   //Fehlerbit aus
-      }
+    } else if ((zerlegterString.cmd == "reset") && zerlegterString.set) {
+      initState(status);
+      Serial.println("Statusvariable rückgesetzt.");
 
-    } else if ((zerlegterString.cmd == "rtc") && zerlegterString.set) {
-      rtc.adjust(DateTime(rtcYear, rtcMonth, rtcDay, rtcHour, rtcMinute, rtcSecond));
-      //gibt aktuelle RTC - Zeit und Status aus
-      SerialChn.print("Zeit gesetzt. ");
-      printRTCTime(rtc.now());
+    } else if ((zerlegterString.cmd == "meas") && zerlegterString.get) {
+      hall.ReadRawValue();
+      hall.DispAllAtSerial();
       
-    } else if ((zerlegterString.cmd == "goCal") && zerlegterString.set) {
-        goCal = TRUE;
-        SerialChn.println("goCal gesetzt");
-        failure |= (uint8_t)rtc.lostPower() << NOTIME; //prüfen, ob RTC gültig ist
+    } else if ((zerlegterString.cmd == "meas") && zerlegterString.set) {
+      if (zerlegterString.number[0] > 0) {
+        measFlag = ON;
+        Serial.print("Measurement-Status: ");
+        Serial.println("ON");
+      } else {
+        measFlag = OFF;
+        Serial.print("Measurement-Status: ");
+        Serial.println("OFF");
+      }
         
-    } else if ((zerlegterString.cmd == "goSun") && zerlegterString.set) {
-        goSun = TRUE;
-        SerialChn.println("goSun gesetzt");
-        failure |= (uint8_t)rtc.lostPower() << NOTIME; //prüfen, ob RTC gültig ist
+    } else if ((zerlegterString.cmd == "ref") && zerlegterString.get) {
+        Serial.print("Sollwert Abstand Magnet - Ball = ");
+        Serial.print(status.setpoint);
+        Serial.println(" mm/100");
         
-    } else if ((zerlegterString.cmd == "goStar") && zerlegterString.set) {
-        goStar = TRUE;
-        SerialChn.println("goStar gesetzt");
-        failure |= (uint8_t)rtc.lostPower() << NOTIME; //prüfen, ob RTC gültig ist
+    } else if ((zerlegterString.cmd == "ref") && zerlegterString.set) {
+      if (zerlegterString.number[0] > 0) {
+        status.setpoint = constrain(zerlegterString.number[0], MINSETPOINT, MAXSETPOINT);
+        Serial.print("Sollwert Abstand Magnet - Ball = ");
+        Serial.print(status.setpoint);
+        Serial.println(" mm/100");
+
+      } else {
+        Serial.println("keine Änderung des Sollwerts.");
+
+        Serial.print("Sollwert Abstand Magnet - Ball = ");
+        Serial.print(status.setpoint);
+        Serial.println(" mm/100");
         
-    } else if ((zerlegterString.cmd == "auto") && zerlegterString.set) {
-        //Timer initialisieren
-        Timer1.initialize(); //1Mio us ist voreingestellt
-        Timer1.attachInterrupt(countSeconds); //attachInterrupt startet den Zähler
-        autoState = TRUE;
-        failure |= (uint8_t)rtc.lostPower() << NOTIME; //prüfen, ob RTC gültig ist
+      }       
+    } else if ((zerlegterString.cmd == "offset") && zerlegterString.get) {
+        Serial.print("Stromoffset = ");
+        Serial.print(status.offset);
+        Serial.println(" digits");
+
+    } else if ((zerlegterString.cmd == "offset") && zerlegterString.set) {
+      if (zerlegterString.number[0] > 0) {
+        status.offset = constrain(zerlegterString.number[0], MINCURRENTOFFSET, MAXCURRENTOFFSET);
+        Serial.print("Stromoffset = ");
+        Serial.print(status.offset);
+        Serial.println(" digits");
+
+      } else {
+        Serial.println("keine Änderung des Stromoffsets.");
+        Serial.print("Stromoffset = ");
+        Serial.print(status.offset);
+        Serial.println(" digits");
+      }
 
     } else if ((zerlegterString.cmd == "failure") && zerlegterString.get) {
-        SerialChn.print("Failure-Wert: ");
-        SerialChn.println(failure);
+        Serial.print("Failure-Wert: ");
+        printFailure(status);
 
     } else if ((zerlegterString.cmd == "failure") && zerlegterString.set) {
-        failure = 0;
-        SerialChn.println("Alle Fehler gelöscht");
-    
-    } else if ((zerlegterString.cmd == "clear") && zerlegterString.set) {
-        goCal = FALSE;         // kalibriert die Uhr erst calStar, dann calSun
-        goStar = FALSE;        // geht in Status calStar über
-        goSun = FALSE;         // geht in Status calSun über
-        validSun = FALSE;      // Sonnenzeiger ist kalibriert
-        validStar = FALSE;     // Sternenscheibe ist kalibriert
-        autoState = OFF;       // Variable zum automatischenn Weiterschalten 
-        diagnosis = ON;        // Variable zur erweiterten Diagnose
-        SerialChn.println("alle Controlvariablen zurückgesetzt");
-        
+        status.failure = 0;
+        Serial.println("Alle Fehler gelöscht");
         
     } else {
       //sollte nie auftreten, da immer cmd mindestens immer help enthält
-      SerialChn.println("Message nicht verstanden.");
+      Serial.println("Message nicht verstanden.");
       printHelp();
     }
   }
 }
+
 
 /// @brief 
 /// @param status 

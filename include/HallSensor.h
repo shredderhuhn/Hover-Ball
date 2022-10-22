@@ -23,22 +23,29 @@ class HallSensor {
         int rawValue = 0; // raw value of the pin
         
     public:
-        // empty constructor
-        // Constructor, defining the pin at Arduino Due with hallsensor and 12 bit resolution
+        
+        /// @brief Constructor, defining the pin at Arduino Due with hallsensor and 12 bit resolution
         HallSensor(int _pinOfHallSensor);
-        /// Constructor, defining hallsensor pin and distance between sensor and magnet
+
+        /// @brief Constructor, defining hallsensor pin and distance between sensor and magnet
         HallSensor(int _pinOfHallSensor, int _distanceBetweenPinAndMagnet, int _ballDiameter);
-        /// reads the rawValue and stores it in the instance
+
+        /// @brief reads the rawValue and stores it in the instance
         void ReadRawValue(); // [digit]
-        // calculates the distance between hall sensor and ball with exponentiell approximation
+
+        /// @brief calculates the distance between hall sensor and ball with exponentiell approximation
         int CalcDistanceSensorVsBallExact(); // [1/100mm]
-        // calculates the distance between hall sensor and ball with polynomial approximation
+
+        /// @brief calculates the distance between hall sensor and ball with polynomial approximation
         int CalcDistanceSensorVsBallPoly(); // [1/100mm]
-        // calculates the distance between hall sensor and magnet with exponentiell approximation
+
+        /// @brief calculates the distance between hall sensor and magnet with exponentiell approximation
         int CalcDistanceMagnetVsBallExact(); // [1/100mm]
-        // calculates the distance between hall sensor and magnet with polynomial approximation
+
+        /// @brief calculates the distance between hall sensor and magnet with polynomial approximation
         int CalcDistanceMagnetVsBallPoly(); // [1/100mm]
-        // display all values on serial monitor
+
+        /// @brief display all values on serial monitor
         void DispAllAtSerial();
 
     

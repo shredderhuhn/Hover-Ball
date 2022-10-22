@@ -20,9 +20,7 @@ void resetController(void) {
 
 void setup() {
   // Setup the status struct
-  status.state = 0;
-  status.setpoint = INITIALSETPOINT;
-  status.offset = INITIALCURRENTOFFSET;
+  initState(status);
 
   //Setup Timer3 as timer from Duetimer
   Timer3.attachInterrupt(controlHandler);

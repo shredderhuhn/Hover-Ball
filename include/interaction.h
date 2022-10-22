@@ -12,7 +12,11 @@ Gunter Wiedemann
 #define INTERACTION_H
 
 
+void initState(Status &status);
 
+/// @brief parses serial input and processes it
+/// @param status status structure containing state machine, setpoint, offset
+/// @param hall hallsensor instance
 void serialinteraction(Status &status, HallSensor &hall);
 
 void setLED(const Status &status, const HallSensor &hall);
