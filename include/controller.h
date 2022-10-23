@@ -56,6 +56,8 @@ void resetController(void);
 
 void initController(void);
 
+void setOutputValues(void);
+
 void resetState(Status &status);
 
 #endif

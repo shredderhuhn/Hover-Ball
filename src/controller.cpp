@@ -13,8 +13,7 @@ void calcController(int measpoint) {
   ctrl.u = (ctrl.u1K + ctrl.u2K) >> 7;
   ctrl.dac0 = UDAC0;
   ctrl.dac1 = constrain(ctrl.u + ctrl.offset + UDAC0, 0, 4095);
-  analogWrite(DAC0,ctrl.dac0);
-  analogWrite(DAC1,ctrl.dac1);
+
 }
 
 void resetController(void) {
@@ -43,8 +42,11 @@ void initController(void) {
     ctrl.u = 0;
     ctrl.dac0 = UDAC0;
     ctrl.dac1 = UDAC0 + ctrl.offset;
-    analogWrite(DAC0,ctrl.dac0);
-    analogWrite(DAC1,ctrl.dac1);
+}
+
+void setOutputValues() {
+  analogWrite(DAC0,ctrl.dac0);
+  analogWrite(DAC1,ctrl.dac1);
 }
 
 void resetState(Status &status) {

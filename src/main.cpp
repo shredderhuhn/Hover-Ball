@@ -12,12 +12,13 @@ HallSensor hall(HALLPIN, DISTANCESENSORMAGNET, BALLDIAMETER);
 void controlHandler(void) {
   hall.ReadRawValue();
   calcController(hall.CalcDistanceMagnetVsBallPoly());
+  setOutputValues();
 }
-
 
 void setup() {
   // Setup the status struct
   resetState(status);
+  resetController();
 
   //Setup Timer3 as timer from Duetimer
   Timer3.attachInterrupt(controlHandler);
@@ -71,6 +72,8 @@ void loop() {
   case 3:
     setLED(status, hall);  
     /// @todo switch on current offset (Ausgabe am Pin)
+    initController();
+    setOutputValues();
     serialinteraction(status, hall);
     break;
   /* State 4:
@@ -80,7 +83,7 @@ void loop() {
   */
   case 4:
     setLED(status, hall);  
-    /// @todo Sollwert = Messwert (+x) setzen
+    /// @todo Sollwert = Messwert (+x) setzen ?
     status.state++;
     Timer3.start();
     break;

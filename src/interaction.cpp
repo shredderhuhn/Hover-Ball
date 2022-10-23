@@ -33,6 +33,7 @@ void printHelp() {
   Serial.println("                  2 - Abstand der Kugel zum Magneten zu klein (Sensorspannung >2.3V");  
   Serial.println("                  3 - Abstand der Kugel zum Magneten zu groß (Sensorspannung <1.0V");  
   Serial.println("failure!        - Löscht alle erkannten Fehler");
+  Serial.println("test!xx.yy      - testet yy Iterationen des Controllers mit xx als RawValue des Hallsensors.");
   Serial.println("");
   Serial.println("Für alle Eingaben gilt: ON|VALID = 1 sowie OFF|INVALID = 0");
   
@@ -83,6 +84,27 @@ void printFailure(Status &status){
   if (status.failure && BALLUPSIDEDOWN) Serial.println("Kugel falsch herum eingesetzt. (Sensorspannung >2.7V)");
   if (status.failure && BALLATMAGNET) Serial.println("Kugel klebt am Magneten. (Sensorspannung >2.3V)");
   if (status.failure && BALLDOWN) Serial.println("Kugel abgefallen. (Sensorspannung <1.0V)");
+}
+
+void testCtrl(int raw, int iter, HallSensor &hall) {
+  int zwischenspeicher = hall.GetRawValue();
+  hall.SetRawValue(raw);
+  Serial.println("Folgende Sensorwerte werden simuliert:");
+  hall.DispAllAtSerial();
+  initController();
+  Serial.println("Folgende Controllerwerte sind initial:");
+  printCtrl();
+  for(int i = 0; i<iter; i++) {
+    Serial.print("Iteration Nr. ");
+    Serial.println(i);
+    calcController(hall.CalcDistanceMagnetVsBallPoly());
+    printCtrl();
+    while(!Serial.available()) {};
+    Serial.readString();
+    Serial.println("");
+  }
+  Serial.println("Hallsensor wird auf letzten Rohwert zurückgesetzt");
+  hall.SetRawValue(zwischenspeicher);
 }
 
 
@@ -211,6 +233,11 @@ void serialinteraction(Status &status, HallSensor &hall) {
         status.failure = 0;
         Serial.println("Alle Fehler gelöscht");
         
+    
+    } else if ((zerlegterString.cmd == "test") && zerlegterString.set) {
+        int hallValue = constrain(zerlegterString.number[0], 0, 4095);
+        int iterations = constrain(zerlegterString.number[1], 1, 100);
+        testCtrl(hallValue, iterations, hall);
     } else {
       //sollte nie auftreten, da immer cmd mindestens immer help enthält
       Serial.println("Message nicht verstanden.");
