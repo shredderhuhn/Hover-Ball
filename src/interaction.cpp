@@ -3,13 +3,8 @@
 #include <HallSensor.h>
 #include <HBString.h>
 #include <interaction.h>
+#include <controller.h>
 
-void initState(Status &status) {
-  status.offset = INITIALCURRENTOFFSET;
-  status.setpoint = INITIALSETPOINT;
-  status.state = 0;
-  status.failure = 0;
-}
 
 void printHelp() {
   Serial.println("Folgende Kommandos stehen zur Verfügung.");
@@ -56,6 +51,32 @@ void printStatus(Status &status, HallSensor &hall){
     Serial.println();
 }
 
+void printCtrl(void) {
+  Serial.println("Werte der Controller-Variable:");
+  Serial.print("setpoint = ");
+  Serial.println(ctrl.setpoint);
+  Serial.print("offset = "); 
+  Serial.println(ctrl.offset);
+  Serial.print("error (-(Soll-Ist) = ");
+  Serial.println(ctrl.error);
+  Serial.print("errorTilde[k] = ");
+  Serial.println(ctrl.errorTildeK);
+  Serial.print("errorTilde[k-1] = ");
+  Serial.println(ctrl.errorTildeKM1);
+  Serial.print("u1[k] = ");
+  Serial.println(ctrl.u1K);
+  Serial.print("u2[k] = ");
+  Serial.println(ctrl.u2K);
+  Serial.print("u2[k-1] = ");
+  Serial.println(ctrl.u2KM1);
+  Serial.print("u[k] = ");
+  Serial.println(ctrl.u);
+  Serial.print("dac0 = ");
+  Serial.println(ctrl.dac0);
+  Serial.print("dac1 = ");
+  Serial.println(ctrl.dac1);  
+}
+
 void printFailure(Status &status){
   Serial.print("Fehlerstatus = ");
   Serial.println(status.failure);
@@ -95,6 +116,7 @@ void serialinteraction(Status &status, HallSensor &hall) {
       
     } else if (zerlegterString.cmd == "diag" && zerlegterString.get) {
       printStatus(status, hall);
+      printCtrl();
       
     } else if (zerlegterString.cmd == "state" && zerlegterString.set) {
       status.state = constrain(zerlegterString.number[0],MINSTATE, MAXSTATE);
@@ -122,8 +144,10 @@ void serialinteraction(Status &status, HallSensor &hall) {
       Serial.println(status.state);
       
     } else if ((zerlegterString.cmd == "reset") && zerlegterString.set) {
-      initState(status);
-      Serial.println("Statusvariable rückgesetzt.");
+      resetState(status);
+      Serial.println("Statusvariable zurückgesetzt.");
+      resetController();
+      Serial.println("Controllervariable zurückgesetzt");
 
     } else if ((zerlegterString.cmd == "meas") && zerlegterString.get) {
       hall.ReadRawValue();

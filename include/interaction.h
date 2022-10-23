@@ -7,12 +7,13 @@ Gunter Wiedemann
 #include <HallSensor.h>
 #include <constants.h>
 #include <HBString.h>
+#include <controller.h>
 
 #ifndef INTERACTION_H
 #define INTERACTION_H
 
 
-void initState(Status &status);
+
 
 /// @brief parses serial input and processes it
 /// @param status status structure containing state machine, setpoint, offset
