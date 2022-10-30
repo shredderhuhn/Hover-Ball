@@ -70,7 +70,7 @@
 #define K4MAGCOEFF2                 -0.1248
 #define KSENSEU2B                   320.0
 #define USENSE0                     2.5
-#define VOLT2DIGIT                  4095.0/3.3
+#define VOLT2DIGIT                  3.3/4095.0
 
 // Sensor limits
 #define TOOMUCHVOLTAGE              2.7         // [V]
@@ -84,8 +84,6 @@
 #define INITIALSETPOINT             1600        // [1/100 mm]
 #define MINSETPOINT                 1000        // [1/100 mm]
 #define MAXSETPOINT                 2000        // [1/100 mm]
-/// @todo find out right INITIALCURRENTOFFSET for INITIALSETPOINT
-/// @todo find out whether it is better to work with Amps instead of digits
 #define INITIALCURRENTOFFSET        780         // [digit]
 #define MINCURRENTOFFSET            0           // [digit]
 #define MAXCURRENTOFFSET            4095        // [digit]

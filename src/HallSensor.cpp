@@ -107,7 +107,7 @@ void HallSensor::DispAllAtSerial() {
     Serial.println(" 1/100 mm");
     Serial.print("Balldurchmesser =");
     Serial.print(ballDiameter);
-    Serial.println(" !/100 mm");
+    Serial.println(" 1/100 mm");
     Serial.print("Rohwert = ");
     Serial.print(rawValue);
     Serial.println(" digits");

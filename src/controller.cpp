@@ -8,6 +8,7 @@ Ctrl ctrl;
 void calcController(int measpoint) {
   
   ctrl.error = -(ctrl.setpoint - measpoint);
+  ctrl.errorTildeKM1 = ctrl.errorTildeK;
   ctrl.errorTildeK = K0Z * ctrl.error;
   ctrl.u1K = (ctrl.errorTildeK * K3Z) >> 0;
   ctrl.u2KM1 = ctrl.u2K;

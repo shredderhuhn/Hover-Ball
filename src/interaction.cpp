@@ -66,8 +66,15 @@ void printCtrl(void) {
   Serial.println(ctrl.errorTildeKM1);
   Serial.print("u1[k] = ");
   Serial.println(ctrl.u1K);
-  Serial.print("u2[k] = ");
+  Serial.print("u2[k] = ((ctrl.errorTildeKM1 * K1Z) >> 10) + ((ctrl.u2KM1 * K2Z) >> 12); =");
   Serial.println(ctrl.u2K);
+  Serial.println("  bestehend aus: ");
+  Serial.print("   ((ctrl.errorTildeKM1 * K1Z) >> 10) = ");
+  Serial.println((ctrl.errorTildeKM1 * K1Z) >> 10);
+  Serial.print("   ((ctrl.u2KM1 * K2Z) >> 12); = ");
+  Serial.println((ctrl.u2KM1 * K2Z) >> 12);
+  Serial.print("   (ctrl.u2KM1 * K2Z) = ");
+  Serial.println((ctrl.u2KM1 * K2Z));
   Serial.print("u2[k-1] = ");
   Serial.println(ctrl.u2KM1);
   Serial.print("u[k] = ");
@@ -95,13 +102,16 @@ void testCtrl(int raw, int iter, HallSensor &hall) {
   Serial.println("Folgende Controllerwerte sind initial:");
   printCtrl();
   for(int i = 0; i<iter; i++) {
-    Serial.print("Iteration Nr. ");
-    Serial.println(i);
+     Serial.println("");
+    Serial.print("Durchlauf Nr. ");
+    Serial.println(i+1);
     calcController(hall.CalcDistanceMagnetVsBallPoly());
     printCtrl();
+    Serial.println("");
+    Serial.println("Beliebige Taste drücken ...");
+    Serial.println("");
     while(!Serial.available()) {};
     Serial.readString();
-    Serial.println("");
   }
   Serial.println("Hallsensor wird auf letzten Rohwert zurückgesetzt");
   hall.SetRawValue(zwischenspeicher);
@@ -152,7 +162,7 @@ void serialinteraction(Status &status, HallSensor &hall) {
     } else if ((zerlegterString.cmd == "next") && zerlegterString.set) {
       Serial.print("alter state = ");
       Serial.println(status.state);
-      int tempState = status.state++;
+      int tempState = status.state + 1;
       status.state = constrain(tempState,MINSTATE, MAXSTATE);
       Serial.print("neuer state = ");
       Serial.println(status.state);
@@ -160,7 +170,7 @@ void serialinteraction(Status &status, HallSensor &hall) {
     } else if ((zerlegterString.cmd == "prev") && zerlegterString.set) {
       Serial.print("alter state = ");
       Serial.println(status.state);
-      int tempState = status.state--;
+      int tempState = status.state - 1;
       status.state = constrain(tempState, MINSTATE, MAXSTATE);
       Serial.print("neuer state = ");
       Serial.println(status.state);
