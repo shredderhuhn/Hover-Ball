@@ -2,6 +2,9 @@
 #include <constants.h>
 #include <HallSensor.h>
 
+Status status;
+Ctrl ctrl;
+
 void calcController(int measpoint) {
   
   ctrl.error = -(ctrl.setpoint - measpoint);

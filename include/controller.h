@@ -44,8 +44,8 @@ struct Ctrl
 };
 
 
-Status status;
-Ctrl ctrl;
+extern Status status;
+extern Ctrl ctrl;
 
 
 // Functions
