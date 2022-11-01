@@ -23,11 +23,12 @@ void printHelp() {
   Serial.println("prev!           - vorhergehender Zustand");
   Serial.println("reset!          - alle Variablen rücksetzen (und in Zustand 0)"); 
   Serial.println("meas?           - gibt Sensormesswert aus"); 
-  Serial.println("meas!xxx        - gibt Messwerte kontinuierlich als Rohwert aus xxx=[ON|OFF]"); 
+  Serial.println("meas!xxx        - gibt Messwerte kontinuierlich als Rohwert aus xxx = [ON|OFF]"); 
   Serial.println("ref?            - zeigt eingestellten Sollwert an [1/100 mmm]"); 
   Serial.println("ref!xxxx        - stellt Sollwert ein [1/100 mm] xxxx = 1000..2000"); 
   Serial.println("offset?         - zeigt eingestellten Stromoffset an [digit]");
   Serial.println("offset!xxxx     - stellt Stromoffset ein: xxxx = 0..4095 [digit]");
+  Serial.println("curr!xxx        - schaltet den Strom mit dem offset-Wert ein/aus xxx = [ON|OFF]");
   Serial.println("failure?        - Status der erkannten Fehler:");
   Serial.println("                  1 - Kugel verkehrt herum (Sensorspannung > 2.7V)");
   Serial.println("                  2 - Abstand der Kugel zum Magneten zu klein (Sensorspannung >2.3V");  
@@ -135,7 +136,6 @@ void testHandler(void (*handlerToTest)(void))
         Serial.println("ms");
 }
 
-
 void serialinteraction(Status &status, HallSensor &hall, void (*handlerToTest)(void)) {
 
   static HBString zerlegterString;
@@ -143,10 +143,13 @@ void serialinteraction(Status &status, HallSensor &hall, void (*handlerToTest)(v
 
   if (measFlag) {
     hall.ReadRawValue();
+    Serial.print("Rohwert: ");
     Serial.println(hall.GetRawValue());
+    Serial.print("Abstand vom Sollwert: ");
+    Serial.println(hall.CalcDistanceMagnetVsBallPoly());
   }
 
-  delay(200);
+  delay(500);
 
   if (Serial.available()){        // Daten liegen an
     
@@ -251,6 +254,14 @@ void serialinteraction(Status &status, HallSensor &hall, void (*handlerToTest)(v
         Serial.print("Stromoffset = ");
         Serial.print(status.offset);
         Serial.println(" digits");
+      }
+
+    } else if ((zerlegterString.cmd == "curr") && zerlegterString.set) {
+      if (zerlegterString.number[0] > 0) {
+        setCurrent();
+        Serial.println("Strom ist an.");
+      } else {
+        Serial.println("Strom ist aus.");
       }
 
     } else if ((zerlegterString.cmd == "failure") && zerlegterString.get) {

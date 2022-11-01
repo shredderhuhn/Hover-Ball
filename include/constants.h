@@ -70,7 +70,7 @@
 #define K4MAGCOEFF2                 -0.1248
 #define KSENSEU2B                   320.0
 #define USENSE0                     2.5
-#define VOLT2DIGIT                  3.3/4095.0
+#define DIGIT2VOLT                  3.3/4095.0
 
 // Sensor limits
 #define TOOMUCHVOLTAGE              2.7         // [V]

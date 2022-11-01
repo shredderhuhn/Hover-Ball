@@ -76,7 +76,7 @@ void HallSensor::ReadRawValue() {
 
 /// @brief calculates the distance between hall sensor and ball with exponentiell approximation
 int HallSensor::CalcDistanceSensorVsBallExact() {
-    double uSens = VOLT2DIGIT * rawValue;
+    double uSens = DIGIT2VOLT * rawValue;
     double x = 1 / K4MAGCOEFF2 * log(KSENSEU2B / K4MAGCOEFF1 * (USENSE0 - uSens));
     return (int(x * 100));
 };
@@ -111,6 +111,8 @@ void HallSensor::DispAllAtSerial() {
     Serial.print("Rohwert = ");
     Serial.print(rawValue);
     Serial.println(" digits");
+    Serial.print("Spannung = ");
+    Serial.print(rawValue * DIGIT2VOLT);
     Serial.print("Abstand Ball <-> Hallsensor (Polynom) = ");
     Serial.print(CalcDistanceSensorVsBallPoly());
     Serial.println(" 1/100 mm");
@@ -122,7 +124,5 @@ void HallSensor::DispAllAtSerial() {
     Serial.println(" 1/100 mm");
     Serial.print("Abstand Ball <-> Elektromagnet (Exakt) = ");
     Serial.print(CalcDistanceMagnetVsBallExact());
-    Serial.println(" 1/100 mm");
-
-    
+    Serial.println(" 1/100 mm");    
 };
