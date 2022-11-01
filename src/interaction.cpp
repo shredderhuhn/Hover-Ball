@@ -102,7 +102,7 @@ void testCtrl(int raw, int iter, HallSensor &hall) {
   Serial.println("Folgende Controllerwerte sind initial:");
   printCtrl();
   for(int i = 0; i<iter; i++) {
-     Serial.println("");
+    Serial.println("");
     Serial.print("Durchlauf Nr. ");
     Serial.println(i+1);
     calcController(hall.CalcDistanceMagnetVsBallPoly());

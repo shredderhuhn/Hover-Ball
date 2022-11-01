@@ -90,7 +90,7 @@
 #define SAMPLETIME                  1000        // [µs]      // 1kHz Takt für den Anfang  
 #define K0Z                         2362      
 #define K1Z                         -3024
-#define K2Z                         2752
+#define K2Z                         1376
 #define K3Z                         10
 #define UDAC0                       844         // [digit] 844 entspricht 1V
 
