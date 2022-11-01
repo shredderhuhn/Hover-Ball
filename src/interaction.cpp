@@ -117,8 +117,26 @@ void testCtrl(int raw, int iter, HallSensor &hall) {
   hall.SetRawValue(zwischenspeicher);
 }
 
+void testHandler(void (*handlerToTest)(void))
+{
+        // Zeit testen
+        Serial.println("");
+        Serial.println("Beliebige Taste drücken zum Testen der Rechenzeit...");
+        Serial.println("");
+        while(!Serial.available()) {};
+        Serial.readString();
+        int starttime = millis();
+        for (int i = 0; i<10000; i++) {
+          (*handlerToTest)();
+        }
+        int endtime = millis();
+        Serial.print("Zeit für 10000 iterationen: ");
+        Serial.print(endtime - starttime);
+        Serial.println("ms");
+}
 
-void serialinteraction(Status &status, HallSensor &hall) {
+
+void serialinteraction(Status &status, HallSensor &hall, void (*handlerToTest)(void)) {
 
   static HBString zerlegterString;
   static bool measFlag = 0;
@@ -248,6 +266,7 @@ void serialinteraction(Status &status, HallSensor &hall) {
         int hallValue = constrain(zerlegterString.number[0], 0, 4095);
         int iterations = constrain(zerlegterString.number[1], 1, 100);
         testCtrl(hallValue, iterations, hall);
+        testHandler(handlerToTest);
     } else {
       //sollte nie auftreten, da immer cmd mindestens immer help enthält
       Serial.println("Message nicht verstanden.");

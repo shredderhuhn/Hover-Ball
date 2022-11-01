@@ -45,7 +45,7 @@ void loop() {
     Timer3.stop();
     resetController();
     setLED(status, hall);
-    serialinteraction(status, hall);
+    serialinteraction(status, hall, controlHandler);
     
     break;
   /* State 1:
@@ -55,7 +55,7 @@ void loop() {
   */
   case 1:
     setLED(status, hall);
-    serialinteraction(status, hall);
+    serialinteraction(status, hall, controlHandler);
     break;
   /* State 2:
       Einstellen des Sollwertes: Die HOhlschraube wird nach oben gedreht bis der Sollwert erreicht ist
@@ -63,7 +63,7 @@ void loop() {
   */
   case 2:
     setLED(status, hall);  
-    serialinteraction(status, hall);
+    serialinteraction(status, hall, controlHandler);
     break;
   /* State 3:
       Anschalten des eingestellten Stromoffsets
@@ -74,7 +74,7 @@ void loop() {
     /// @todo switch on current offset (Ausgabe am Pin)
     initController();
     setOutputValues();
-    serialinteraction(status, hall);
+    serialinteraction(status, hall, controlHandler);
     break;
   /* State 4:
       Sollwert = Messwert (+x) setzen
