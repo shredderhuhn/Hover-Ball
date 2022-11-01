@@ -29,8 +29,8 @@ void resetController(void) {
     ctrl.u2K = 0;
     ctrl.u2KM1 = 0;
     ctrl.u = 0;
-    ctrl.dac0 = 0;
-    ctrl.dac1 = 0;
+    ctrl.dac0 = UDAC0;
+    ctrl.dac1 = UDAC0;
 }
 
 void initController(void) {
@@ -55,8 +55,8 @@ void setOutputValues() {
 }
 
 void resetOutputValues() {
-  analogWrite(DAC0,0);
-  analogWrite(DAC1,0);
+  analogWrite(DAC0,UDAC0);
+  analogWrite(DAC1,UDAC0);
 }
 
 void setCurrent() {

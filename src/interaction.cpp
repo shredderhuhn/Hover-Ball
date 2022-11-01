@@ -145,7 +145,7 @@ void serialinteraction(Status &status, HallSensor &hall, void (*handlerToTest)(v
     hall.ReadRawValue();
     Serial.print("Rohwert: ");
     Serial.println(hall.GetRawValue());
-    Serial.print("Abstand vom Sollwert: ");
+    Serial.print("Abstand vom Magnet [1/100 mm]: ");
     Serial.println(hall.CalcDistanceMagnetVsBallPoly());
   }
 
@@ -261,6 +261,7 @@ void serialinteraction(Status &status, HallSensor &hall, void (*handlerToTest)(v
         setCurrent();
         Serial.println("Strom ist an.");
       } else {
+        resetCurrent();
         Serial.println("Strom ist aus.");
       }
 

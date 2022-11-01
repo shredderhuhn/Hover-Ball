@@ -84,7 +84,7 @@
 #define INITIALSETPOINT             1600        // [1/100 mm]
 #define MINSETPOINT                 1000        // [1/100 mm]
 #define MAXSETPOINT                 2000        // [1/100 mm]
-#define INITIALCURRENTOFFSET        780         // [digit]
+#define INITIALCURRENTOFFSET        1000        // vorher: 780         // [digit]
 #define MINCURRENTOFFSET            0           // [digit]
 #define MAXCURRENTOFFSET            4095        // [digit]
 #define SAMPLETIME                  1000        // [µs]      // 1kHz Takt für den Anfang  

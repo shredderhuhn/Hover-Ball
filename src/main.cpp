@@ -20,6 +20,10 @@ void setup() {
   resetState(status);
   resetController();
 
+  // Setup Ausgabe
+  analogWriteResolution(12);
+  resetOutputValues();
+
   //Setup Timer3 as timer from Duetimer
   Timer3.attachInterrupt(controlHandler);
   Timer3.setPeriod(SAMPLETIME);
