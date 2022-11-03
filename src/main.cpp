@@ -4,9 +4,11 @@
 #include <constants.h>
 #include <interaction.h>
 #include <controller.h>
+#include <WhiteLED.h>
 
 // Variables need to be global to get into setup and loop
 HallSensor hall(HALLPIN, DISTANCESENSORMAGNET, BALLDIAMETER);
+WhiteLED led(LED1R,LED1G,LED1B);
 
 
 void controlHandler(void) {
@@ -15,18 +17,34 @@ void controlHandler(void) {
   setOutputValues();
 }
 
+void greenSwitchHandler(void) {
+  status.state = 1;
+}
+
+void redSwitchHandler(void) {
+  status.state = 0;
+}
+
+void blinkHandler(void) {
+  led.toggleLED();
+}
+
 void setup() {
   // Setup the status struct
   resetState(status);
   resetController();
 
   // Setup Ausgabe
-  analogWriteResolution(12);
+  analogWriteResolution(12); //Wiederholung, denn in WhiteLED-Konstruktor wird dies bereits aufgerufen
   resetOutputValues();
 
   //Setup Timer3 as timer from Duetimer
   Timer3.attachInterrupt(controlHandler);
   Timer3.setPeriod(SAMPLETIME);
+
+  //Setup Interrupts für die Taster
+  attachInterrupt(digitalPinToInterrupt(SWITCHR), redSwitchHandler, RISING);
+  attachInterrupt(digitalPinToInterrupt(SWITCHG), greenSwitchHandler, RISING);
 
   // Seriellen Monitor einschalten
   Serial.begin(9600);

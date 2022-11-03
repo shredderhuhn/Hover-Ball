@@ -34,14 +34,8 @@
 #define LED1R                       2
 #define LED1G                       3
 #define LED1B                       4
-#define LED2R                       5
-#define LED2G                       6
-#define LED2B                       7
-#define LED3R                       8
-#define LED3G                       9
-#define LED3B                       10
-#define MOTOROFFSETPIN              DAC0
-#define MOTORCURRENTPIN             DAC1
+#define SWITCHR                     6
+#define SWITCHG                     7
 
 
 
@@ -71,11 +65,19 @@
 #define KSENSEU2B                   320.0
 #define USENSE0                     2.5
 #define DIGIT2VOLT                  3.3/4095.0
+#define VOLT2DIGIT                  4095.0/3.3
 
 // Sensor limits
 #define TOOMUCHVOLTAGE              2.7         // [V]
 #define TOOCLOSETOSENSOR            1.0         // [V]
 #define TOOCLOSETOOMAGNET           2.1         // [V]
+
+// Sensor limits in digits (is used, and explicitely calculated for speed)
+#define BALLWRONGDIGIT              3350        // [digit]
+#define BALLTOOLOWDIGIT             1241        // [digit]
+#define BALLTOOHIGHDIGIT            2606        // [digit]
+#define NOBALLMAX                   2100        // [digit]
+#define NOBALLMIN                   2000        // [digit]
 
 /************************************/
 /* Parameter of the Control Loop    */
