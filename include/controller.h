@@ -24,7 +24,7 @@ struct Status
     int state;
     int setpoint;
     int offset;
-    int failure;
+    bool failure;
 };
 
 struct Ctrl

@@ -35,6 +35,18 @@ WhiteLED::WhiteLED(int _pinRed, int _pinGreen, int _pinBlue) {
     analogWriteResolution(12);
 }
 
+void WhiteLED::setColor(LEDColor _color) {
+    color.red = _color.red;
+    color.green = _color.green;
+    color.blue = _color.blue;
+}
+
+LEDColor WhiteLED::getColor() {
+    return color;
+}
+
+
+
 void WhiteLED::switchOnLED(void){
     analogWrite(pinRed,color.red);
     analogWrite(pinGreen,color.green);

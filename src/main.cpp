@@ -9,12 +9,15 @@
 // Variables need to be global to get into setup and loop
 HallSensor hall(HALLPIN, DISTANCESENSORMAGNET, BALLDIAMETER);
 WhiteLED led(LED1R,LED1G,LED1B);
+bool failurestickyflag = 0;
+// further global variables from controller.h: ctrl, status
 
 
 void controlHandler(void) {
   hall.ReadRawValue();
   calcController(hall.CalcDistanceMagnetVsBallPoly());
   setOutputValues();
+  status.failure = led.processControlState(ctrl.error, hall.GetRawValue());
 }
 
 void greenSwitchHandler(void) {
@@ -42,6 +45,10 @@ void setup() {
   Timer3.attachInterrupt(controlHandler);
   Timer3.setPeriod(SAMPLETIME);
 
+  //Setup Timer4 für die Fehlerbehandlung
+  Timer4.attachInterrupt(blinkHandler);
+  Timer4.setFrequency(4); //(in Hz)
+
   //Setup Interrupts für die Taster
   attachInterrupt(digitalPinToInterrupt(SWITCHR), redSwitchHandler, RISING);
   attachInterrupt(digitalPinToInterrupt(SWITCHG), greenSwitchHandler, RISING);
@@ -66,56 +73,39 @@ void loop() {
   case 0: 
     Timer3.stop();
     resetController();
-    setLED(status, hall);
-    serialinteraction(status, hall, controlHandler);
-    
+    led.setColor(LEDred);
+    led.switchOnLED();
+    serialinteraction(status, hall, controlHandler);    
     break;
+
   /* State 1:
-      Händisches Kalibrieren der symmetrischen Magnetstellung unten
-      minimale Spannung am Hallsensor, Nichtverändern der Spannung beim Drehen der Kugel
-      per Knopfdruck oder "next" in den State 2
+      Anschalten des eingestellten Stromoffsets
+      Einschalten des Reglers
+      automatischer Wechsel in den State 2
   */
   case 1:
-    setLED(status, hall);
-    serialinteraction(status, hall, controlHandler);
-    break;
-  /* State 2:
-      Einstellen des Sollwertes: Die HOhlschraube wird nach oben gedreht bis der Sollwert erreicht ist
-      per Knopfdruck oder "next" in den State 3
-  */
-  case 2:
-    setLED(status, hall);  
-    serialinteraction(status, hall, controlHandler);
-    break;
-  /* State 3:
-      Anschalten des eingestellten Stromoffsets
-      per Knopfdruck oder "next" in den State 4
-  */
-  case 3:
-    setLED(status, hall);  
     /// @todo switch on current offset (Ausgabe am Pin)
     initController();
     setOutputValues();
-    serialinteraction(status, hall, controlHandler);
-    break;
-  /* State 4:
-      Sollwert = Messwert (+x) setzen
-      Einschalten des Reglers
-      automatischer Wechsel in den State 5
-  */
-  case 4:
-    setLED(status, hall);  
-    /// @todo Sollwert = Messwert (+x) setzen ?
     status.state++;
     Timer3.start();
     break;
-  /* State 5:
+
+  /* State 2:
       Regelung läuft
+      Überprüfung, ob failure gesetzt wurde, dann blinken
   */
-  case 5:
-    setLED(status, hall); 
-    /// @todo Hier muss eine Funktion aufgerufen werden, die überprüft, ob die Regelung noch läuft, oder ob man oben/unter anschlägt 
+  case 2:
+    if (status.failure && !failurestickyflag) {
+      failurestickyflag = true;
+      Timer4.start();
+    }
+    if (!status.failure) {
+      failurestickyflag = false;
+      Timer4.stop();
+    }
     break;
+  
   /* DEFAULT sollte nie erreicht werden */
   default:
     break;

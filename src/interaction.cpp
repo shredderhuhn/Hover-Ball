@@ -286,9 +286,3 @@ void serialinteraction(Status &status, HallSensor &hall, void (*handlerToTest)(v
     }
   }
 }
-
-
-/// @brief 
-/// @param status 
-/// @param hall 
-void setLED(const Status &status, const HallSensor &hall){}
