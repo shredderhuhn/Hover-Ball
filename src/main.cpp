@@ -8,9 +8,7 @@
 
 /*
 Known Bugs:
-- Blinkt nicht, wenn Ball verkehrt herum (rote Farbe wird aber angenommen
-- Grüner Knopf schaltet manchmal auch auf state 0 zurück
-- Wenn roter Knopf gedrück wird, dann knallt der Ball an den Magneten
+- keine
 */
 
 // Variables need to be global to get into setup and loop
@@ -27,18 +25,6 @@ void controlHandler(void) {
   status.failure = led.processControlState(ctrl.error, hall.GetRawValue());
 }
 
-void greenSwitchHandler(void) {
-  status.state = 1;
-}
-
-void redSwitchHandler(void) {
-  status.state = 0;
-}
-
-void blinkHandler(void) {
-  led.toggleLED();
-}
-
 void setup() {
   // Setup the status struct
   resetState(status);
@@ -51,14 +37,6 @@ void setup() {
   //Setup Timer3 as timer from Duetimer
   Timer3.attachInterrupt(controlHandler);
   Timer3.setPeriod(SAMPLETIME);
-
-  //Setup Timer4 für die Fehlerbehandlung
-  Timer4.attachInterrupt(blinkHandler);
-  Timer4.setFrequency(4); //(in Hz)
-
-  //Setup Interrupts für die Taster
-  attachInterrupt(digitalPinToInterrupt(SWITCHR), redSwitchHandler, RISING);
-  attachInterrupt(digitalPinToInterrupt(SWITCHG), greenSwitchHandler, RISING);
 
   // Seriellen Monitor einschalten
   //Serial.begin(9600);
@@ -82,6 +60,7 @@ void loop() {
     resetController();
     led.setColor(LEDred);
     led.switchOnLED();
+    status.state++;
     //serialinteraction(status, hall, controlHandler);    
     break;
 
@@ -100,17 +79,8 @@ void loop() {
 
   /* State 2:
       Regelung läuft
-      Überprüfung, ob failure gesetzt wurde, dann blinken
   */
   case 2:
-    if (status.failure && !failurestickyflag) {
-      failurestickyflag = true;
-      Timer4.start();
-    }
-    if (!status.failure) {
-      failurestickyflag = false;
-      Timer4.stop();
-    }
     break;
   
   /* DEFAULT sollte nie erreicht werden */

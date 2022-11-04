@@ -13,7 +13,7 @@ LEDColor const LEDred{4095,0,0};
 LEDColor const LEDgreen{0,4095,0};
 LEDColor const LEDblue{0,0,4095};
 LEDColor const LEDwhite{4095,4095,4095};
-LEDColor const LEDyellow{4095,4095,0};
+LEDColor const LEDyellow{4095,2000,0};
 LEDColor const LEDblack{0,0,0};
 LEDColor const LEDoff{0,0,0};
 LEDColor const LEDcyan{0,4095,4095};
@@ -83,11 +83,11 @@ bool WhiteLED::processControlState(int errordigit, int halldigit){
         switchOnLED();
         return 1;
     } else if ((halldigit < NOBALLMAX) && (halldigit > NOBALLMIN)) {
-        setColor(LEDwhite);
+        setColor(LEDyellow);
         switchOnLED();
         return 0;
     } else {
-        setColor(LEDyellow);
+        setColor(LEDgreen);
         switchOnLED();
         return 0;
     };
