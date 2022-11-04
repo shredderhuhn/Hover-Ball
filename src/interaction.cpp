@@ -261,8 +261,9 @@ void serialinteraction(Status &status, HallSensor &hall, void (*handlerToTest)(v
     } else if ((zerlegterString.cmd == "test") && zerlegterString.set) {
         int hallValue = constrain(zerlegterString.number[0], 0, 4095);
         int iterations = constrain(zerlegterString.number[1], 1, 100);
-        testCtrl(hallValue, iterations, hall);
         testHandler(handlerToTest);
+        testCtrl(hallValue, iterations, hall);
+       
     } else {
       //sollte nie auftreten, da immer cmd mindestens immer help enthält
       Serial.println("Message nicht verstanden.");

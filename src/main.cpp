@@ -6,6 +6,13 @@
 #include <controller.h>
 #include <WhiteLED.h>
 
+/*
+Known Bugs:
+- Blinkt nicht, wenn Ball verkehrt herum (rote Farbe wird aber angenommen
+- Grüner Knopf schaltet manchmal auch auf state 0 zurück
+- Wenn roter Knopf gedrück wird, dann knallt der Ball an den Magneten
+*/
+
 // Variables need to be global to get into setup and loop
 HallSensor hall(HALLPIN, DISTANCESENSORMAGNET, BALLDIAMETER);
 WhiteLED led(LED1R,LED1G,LED1B);

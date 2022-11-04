@@ -18,7 +18,7 @@ LEDColor const LEDblack{0,0,0};
 LEDColor const LEDoff{0,0,0};
 LEDColor const LEDcyan{0,4095,4095};
 LEDColor const LEDpurple{4095,0,4095};
-LEDColor const LEDorange{4095,0,2048};
+LEDColor const LEDorange{4095,512,0};
 
 /*+*******************************************************************************/
 /* Constructor                                                                   */
@@ -91,4 +91,5 @@ bool WhiteLED::processControlState(int errordigit, int halldigit){
         switchOnLED();
         return 0;
     } ;
+    return 0;
 }
