@@ -6,14 +6,6 @@
 #define CONSTANTS_H
 
 
-
-/***************************************/
-/* failure definition                  */
-/***************************************/
-#define BALLUPSIDEDOWN              1
-#define BALLATMAGNET                2
-#define BALLDOWN                    4
-
 /**********************************/
 /* General Constants              */
 /**********************************/
@@ -23,7 +15,7 @@
 #define VALID                       1
 #define INVALID                     0
 #define MINSTATE                    0
-#define MAXSTATE                    5   //Achtung, muss geändert werden, wenn weitere Zustände hinzukommen
+#define MAXSTATE                    2   //Achtung, muss geändert werden, wenn weitere Zustände hinzukommen
 
 /**********************************/
 /* Arduino Due Port Definition    */

@@ -9,16 +9,13 @@
 void printHelp() {
   Serial.println("Folgende Kommandos stehen zur Verfügung.");
   Serial.println("?               - Hilfe");
-  Serial.println("ver?            - Version der Software");
+  Serial.println("ver?            - Version der Software: Datum und Zeit");
   Serial.println("diag?           - Diagnoseausgabe");
   Serial.println("state?          - Zustandsmaschinenstatus abfragen:");
-  Serial.println("                  0 - Einsetzen der Kugel/Init/Failure");
-  Serial.println("                  1 - Kalibrierung der Kugel (minimale Sensorspannung");
-  Serial.println("                  2 - Hochdrehen der HOhlschraube bis zum Sollwert");
-  Serial.println("                  3 - Einschalten des Stromoffsets");
-  Serial.println("                  4 - Soll=Ist und Einschalten der Regelung (autom. nach 5)");
-  Serial.println("                  5 - Laufende Regelung");
-  Serial.println("state!x         - Zustand setzen x = 0..5");
+  Serial.println("                  0 - Diagnosestatus: Interaktiv mit serieller Schnittstell");
+  Serial.println("                  1 - Einschalten der Regelung");
+  Serial.println("                  2 - Regelung läuft");
+  Serial.println("state!x         - Zustand setzen x = 0..2");
   Serial.println("next!           - nächster Zustand)");
   Serial.println("prev!           - vorhergehender Zustand");
   Serial.println("reset!          - alle Variablen rücksetzen (und in Zustand 0)"); 
@@ -29,11 +26,6 @@ void printHelp() {
   Serial.println("offset?         - zeigt eingestellten Stromoffset an [digit]");
   Serial.println("offset!xxxx     - stellt Stromoffset ein: xxxx = 0..4095 [digit]");
   Serial.println("curr!xxx        - schaltet den Strom mit dem offset-Wert ein/aus xxx = [ON|OFF]");
-  Serial.println("failure?        - Status der erkannten Fehler:");
-  Serial.println("                  1 - Kugel verkehrt herum (Sensorspannung > 2.7V)");
-  Serial.println("                  2 - Abstand der Kugel zum Magneten zu klein (Sensorspannung >2.3V");  
-  Serial.println("                  3 - Abstand der Kugel zum Magneten zu groß (Sensorspannung <1.0V");  
-  Serial.println("failure!        - Löscht alle erkannten Fehler");
   Serial.println("test!xx.yy      - testet yy Iterationen des Controllers mit xx als RawValue des Hallsensors.");
   Serial.println("");
   Serial.println("Für alle Eingaben gilt: ON|VALID = 1 sowie OFF|INVALID = 0");
@@ -84,14 +76,6 @@ void printCtrl(void) {
   Serial.println(ctrl.dac0);
   Serial.print("dac1 = ");
   Serial.println(ctrl.dac1);  
-}
-
-void printFailure(Status &status){
-  Serial.print("Fehlerstatus = ");
-  Serial.println(status.failure);
-  if (status.failure && BALLUPSIDEDOWN) Serial.println("Kugel falsch herum eingesetzt. (Sensorspannung >2.7V)");
-  if (status.failure && BALLATMAGNET) Serial.println("Kugel klebt am Magneten. (Sensorspannung >2.3V)");
-  if (status.failure && BALLDOWN) Serial.println("Kugel abgefallen. (Sensorspannung <1.0V)");
 }
 
 void testCtrl(int raw, int iter, HallSensor &hall) {
@@ -272,14 +256,7 @@ void serialinteraction(Status &status, HallSensor &hall, void (*handlerToTest)(v
         Serial.println("Strom ist aus.");
       }
 
-    } else if ((zerlegterString.cmd == "failure") && zerlegterString.get) {
-        Serial.print("Failure-Wert: ");
-        printFailure(status);
 
-    } else if ((zerlegterString.cmd == "failure") && zerlegterString.set) {
-        status.failure = 0;
-        Serial.println("Alle Fehler gelöscht");
-        
     
     } else if ((zerlegterString.cmd == "test") && zerlegterString.set) {
         int hallValue = constrain(zerlegterString.number[0], 0, 4095);
