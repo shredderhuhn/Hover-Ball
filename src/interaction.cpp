@@ -134,6 +134,11 @@ void testHandler(void (*handlerToTest)(void))
         Serial.print("Zeit für 10000 iterationen: ");
         Serial.print(endtime - starttime);
         Serial.println("ms");
+        Serial.println("");
+        Serial.println("Beliebige Taste drücken zum Rücksetzen...");
+        Serial.println("");
+        while(!Serial.available()) {};
+        Serial.readString();
 }
 
 void serialinteraction(Status &status, HallSensor &hall, void (*handlerToTest)(void)) {
@@ -164,8 +169,10 @@ void serialinteraction(Status &status, HallSensor &hall, void (*handlerToTest)(v
       printHelp();
       
     } else if (zerlegterString.cmd == "ver") {
-      Serial.print("Version: ");
-      Serial.println(__FILE__);
+      Serial.print("Version vom: ");
+      Serial.print(__DATE__);
+      Serial.print("  ");
+      Serial.println(__TIME__);
       
     } else if (zerlegterString.cmd == "diag" && zerlegterString.get) {
       printStatus(status, hall);
