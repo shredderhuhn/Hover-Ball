@@ -68,8 +68,8 @@
 #define BALLWRONGDIGIT              3350        // [digit]
 #define BALLTOOLOWDIGIT             1241        // [digit]
 #define BALLTOOHIGHDIGIT            2606        // [digit]
-#define NOBALLMAX                   2100        // [digit]
-#define NOBALLMIN                   2000        // [digit]
+#define NOBALLMAX                   3150        // [digit]
+#define NOBALLMIN                   3050        // [digit]
 
 /************************************/
 /* Parameter of the Control Loop    */

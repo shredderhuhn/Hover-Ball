@@ -74,7 +74,7 @@ bool WhiteLED::processControlState(int errordigit, int halldigit){
         setColor(LEDblue);
         switchOnLED();
         return 0;
-    } else if ((errordigit > -300) && (errordigit <300)) {
+    } else if ((errordigit > -500) && (errordigit <500) && (halldigit > 1000)) {
         setColor(LEDgreen);
         switchOnLED();
         return 0;
@@ -83,13 +83,13 @@ bool WhiteLED::processControlState(int errordigit, int halldigit){
         switchOnLED();
         return 1;
     } else if ((halldigit < NOBALLMAX) && (halldigit > NOBALLMIN)) {
-        setColor(LEDblue);
+        setColor(LEDwhite);
         switchOnLED();
         return 0;
-    } else if ((halldigit > BALLTOOHIGHDIGIT) || (halldigit < BALLTOOLOWDIGIT)) {
-        setColor(LEDorange);
+    } else {
+        setColor(LEDyellow);
         switchOnLED();
         return 0;
-    } ;
+    };
     return 0;
 }

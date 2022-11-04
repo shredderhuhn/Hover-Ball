@@ -61,10 +61,10 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(SWITCHG), greenSwitchHandler, RISING);
 
   // Seriellen Monitor einschalten
-  Serial.begin(9600);
-  while(!Serial.available()) {} //warten, dass der serielle Monitor online ist
-  Serial.readString();
-  Serial.println("Jetzt geht es los.");
+  //Serial.begin(9600);
+  //while(!Serial.available()) {} //warten, dass der serielle Monitor online ist
+  //Serial.readString();
+  //Serial.println("Jetzt geht es los.");
 }
 
 void loop() { 
@@ -82,7 +82,7 @@ void loop() {
     resetController();
     led.setColor(LEDred);
     led.switchOnLED();
-    serialinteraction(status, hall, controlHandler);    
+    //serialinteraction(status, hall, controlHandler);    
     break;
 
   /* State 1:
